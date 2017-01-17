@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import {View, Text, StyleSheet, Platform, ListView, Keyboard,
-  AsyncStorage} from 'react-native'
+  AsyncStorage, ActivityIndicator} from 'react-native'
 import Header from './header'
 import Footer from './footer'
 import Row from './row'
@@ -25,6 +25,7 @@ class App extends Component {
       allComplete: false,
       value: '',
       count: 0,
+      loading: true,
       filter: 'ALL',
       items: [],
       dataSource: ds.cloneWithRows([])
@@ -54,8 +55,9 @@ class App extends Component {
     AsyncStorage.getItem('items').then((json) => {
       try {
         const items = JSON.parse(json)
-        this.setSource(items, items)
+        this.setSource(items, items, {loading: false})
       } catch (e) {
+        this.setState({loading: false})
       }
     })
   }
@@ -160,6 +162,9 @@ class App extends Component {
           onClearComplete={this.handleClearComplete}
           filter={this.state.filter}
         />
+        {this.state.loading && <View style={styles.loading}>
+          <ActivityIndicator animating size="large" />
+        </View>}
       </View>
     )
   }
@@ -184,6 +189,16 @@ const styles = StyleSheet.create({
   separator: {
     borderWidth: 1,
     borderColor: '#F5F5F5'
+  },
+  loading: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0,0,0,.2)'
   }
 })
 
