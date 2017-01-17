@@ -1,24 +1,55 @@
 import React, {Component} from 'react'
-import {View, Text, StyleSheet, Switch, TouchableOpacity} from 'react-native'
+import {View, Text, StyleSheet, Switch, TouchableOpacity,
+  TextInput} from 'react-native'
 
 class Row extends Component {
   render() {
-    const {complete, onComplete, onRemove} = this.props
+    const {complete, onComplete, onRemove,
+      text, onUpdate, onToggleEdit, editing} = this.props
+
+    const textComponent = (
+      <TouchableOpacity style={styles.textWrap}
+        onLongPress={() => {onToggleEdit(true)}}>
+        <Text style={[styles.text, complete && styles.complete]}>
+          {this.props.text}
+        </Text>
+      </TouchableOpacity>
+    )
+
+    const removeButton = (
+      <TouchableOpacity style={styles.destroy}
+        onPress={onRemove}>
+          <Text>X</Text>
+      </TouchableOpacity>
+    )
+
+    const editingComponent = (
+      <View style={styles.textWrap}>
+        <TextInput onChangeText={onUpdate}
+          autoFocus
+          value={text}
+          style={styles.input}
+          multiline
+        />
+      </View>
+    )
+
+    const doneButton = (
+      <TouchableOpacity
+        style={styles.done}
+        onPress={() => onToggleEdit(false)}>
+        <Text style={styles.doneText}>Save</Text>
+      </TouchableOpacity>
+    )
+
     return (
       <View style={styles.containter}>
         <Switch
           value={complete}
           onValueChange={onComplete}
         />
-        <View style={styles.textWrap}>
-          <Text style={[styles.text, complete && styles.complete]}>
-            {this.props.text}
-          </Text>
-        </View>
-        <TouchableOpacity style={styles.destroy}
-          onPress={onRemove}>
-            <Text>X</Text>
-        </TouchableOpacity>
+        {editing ? editingComponent : textComponent}
+        {editing ? doneButton : removeButton}
       </View>
     )
   }
@@ -31,6 +62,13 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     justifyContent: 'space-between'
   },
+  input: {
+    height: 100,
+    flex: 1,
+    fontSize: 24,
+    padding: 0,
+    color: '#4D4D4D'
+  },
   text: {
     fontSize: 24,
     color: '#4D4D4D'
@@ -41,6 +79,16 @@ const styles = StyleSheet.create({
   },
   complete: {
     textDecorationLine: 'line-through'
+  },
+  done: {
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: '#7be290',
+    padding: 7
+  },
+  doneText: {
+    color: '#4D4D4D',
+    fontSize: 20
   }
 })
 
